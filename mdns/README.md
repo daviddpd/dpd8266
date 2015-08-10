@@ -4,6 +4,10 @@
 
 This code demos a bug, possibly in the NTP code or the ESP8266 SDK of the mDNS functions. 
 
+To use the code, make sure you set the SSID and Wifi password in `user_config.h`.
+
+Also, the ntp server is set in `ntp.c`
+
 When NTP is called before mDNS, nDNS fails.   
 
 Compile with `make BROKEN=1`, and this will include the NTP call, and mDNS is will not work.
