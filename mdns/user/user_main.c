@@ -99,7 +99,11 @@ startup()
 		os_printf("%s\n\r", buffer);
 
 		bootstatus = 1; // network up
+#ifdef BROKEN		
 		ntp_get_time();	
+#else 
+		ntp_unix_timestamp = 1439183355;
+#endif 
 		os_timer_disarm(&boottimer);
 	    os_timer_setfn(&boottimer, (os_timer_func_t *)startup, NULL);
     	os_timer_arm(&boottimer, 250, 1);
