@@ -18,12 +18,18 @@ extern int _GLOBAL_DEBUG;
 #include "user_interface.h"
 void* calloc_wrapper(size_t len, size_t size);
 
-//#define sprintf os_sprintf
-//#ifndef calloc 
-//#define calloc os_zalloc
+
+#define socklen_t int
+#define malloc os_malloc
+#define calloc(len,size) calloc_wrapper(len,size);
+#define free os_free
+#define arc4random_uniform(x) os_random() % x
+#define printf(...) os_printf( __VA_ARGS__ )
+#define sprintf(...) os_sprintf( __VA_ARGS__ )
+#define sbuf_printf(...) os_sprintf( __VA_ARGS__ )
+
 extern int os_printf_plus(const char * format, ...);
 
-//#endif
 
 #define CHATFABRIC_PRINT(msg) os_printf("%s\n", msg );
 #define CHATFABRIC_DEBUG(d, msg) if (d) os_printf("[DEBUG][%s:%s:%d] %s\n", __FILE__, __FUNCTION__, __LINE__, msg );
