@@ -125,6 +125,7 @@ startup()
 		bootstatus = 2; // timeset 
 	    os_printf("%12u %12u Boot Status -  %d/%d\n\r", t/100000, ntp_unix_timestamp, wifiStatus, bootstatus);
 
+        wifi_get_ip_info(STATION_IF, &ipconfig);
 		struct mdns_info *info = (struct mdns_info *)os_zalloc(sizeof(struct mdns_info));
 		info->ipAddr = ipconfig.ip.addr; //ESP8266 station IP
 		

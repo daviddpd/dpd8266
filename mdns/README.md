@@ -1,8 +1,10 @@
 # Sample mDNS with TCP/UDP and Network Time
 
-## NOTE THIS CODE ACTUALLY DEMOS A POSSIBLE BUG IN ESP8266 SDK ##
+## ~~NOTE THIS CODE ACTUALLY DEMOS A POSSIBLE BUG IN ESP8266 SDK~~ ##
 
-This code demos a bug, possibly in the NTP code or the ESP8266 SDK of the mDNS functions. 
+~~This code demos a bug, possibly in the NTP code or the ESP8266 SDK of the mDNS functions. ~~
+
+This code demos a bug, now works.  in `startup()`, in the non-BROKEN state, `struct ip_info ipconfig`, was initialized  in the first if statement and used in the third.  However, when waiting for the NTP to get setup, the first if block was not called, so `struct ip_info ipconfig` was null or uninitialized when `espconn_mdns_init(info)` was called.   Adding another call to `        wifi_get_ip_info(STATION_IF, &ipconfig);` fixes the issue.
 
 To use the code, make sure you set the SSID and Wifi password in `user_config.h`.
 
