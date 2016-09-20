@@ -35,8 +35,8 @@ ESPPORT		?= /dev/ttyUSB0
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= ../dpdChatFabric ../dpdChatPacket driver user espChatFabric ../crypto ../util ../uuid_wrapper ../uuid
-EXTRA_INCDIR    = include ../crypto ../includes 
+MODULES		= driver user
+EXTRA_INCDIR    = include
 
 # libraries used in this project, mainly provided by the SDK
 #LIBS		= c gcc hal pp phy net80211 lwip wpa main
@@ -53,12 +53,7 @@ endif
 LDFLAGS		= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static 
 
 # linker script used for the above linkier step
-# LD_SCRIPT	= eagle.app.v6.ld
-# LD_SCRIPT  = eagle.app.v6.full512.ld
- LD_SCRIPT  = eagle.app.v6.full2048.ld
-#LD_SCRIPT	= eagle.app.v6.new.1024.app1.ld
-#LD_SCRIPT	= eagle.app.v6.new.1024.app2.ld
-#LD_SCRIPT	= eagle.app.v6.new.2048.ld
+LD_SCRIPT  = eagle.app.v6.full2048.ld
 
 # various paths from the SDK used in this project
 SDK_LIBDIR	= lib
@@ -69,6 +64,7 @@ SDK_INCDIR	= include include/json
 # these are the names and options to generate them
 FW_FILE_1_ADDR	= 0x00000
 FW_FILE_2_ADDR	= 0x40000
+#FW_FILE_2_ADDR	= 0x10000
 FW_DATA_1_ADDR	= 0x3FE000
 FW_DATA_DEFAULT_ADDR = 0x3FC000 
 
@@ -105,6 +101,7 @@ FW_FILE_1	:= $(addprefix $(FW_BASE)/,$(FW_FILE_1_ADDR).bin)
 FW_FILE_2	:= $(addprefix $(FW_BASE)/,$(FW_FILE_2_ADDR).bin)
 
 FW_DATA_DEFAULT := $(SDK_BASE)/bin/esp_init_data_default.bin
+FW_DATA_BLANK := $(SDK_BASE)/bin/blank.bin
 FW_DATA_1	:= 16kblank.bin
 
 FLASH_SIZE := 32m  #    [--flash_size {4m,2m,8m,16m,32m,16m-c1,32m-c1,32m-c2}]
@@ -154,7 +151,12 @@ flash: $(FW_FILE_1) $(FW_FILE_2)
 	$(ESPTOOL) --port $(ESPPORT) write_flash $(FW_FILE_1_ADDR) $(FW_FILE_1) $(FW_FILE_2_ADDR) $(FW_FILE_2)
 
 flashdata: $(FW_FILE_1) $(FW_FILE_2)
-	$(ESPTOOL) --port $(ESPPORT) write_flash  $(FW_FILE_1_ADDR) $(FW_FILE_1) $(FW_FILE_2_ADDR) $(FW_FILE_2) $(FW_DATA_DEFAULT_ADDR) $(FW_DATA_DEFAULT)
+	$(ESPTOOL) --port $(ESPPORT) write_flash  \
+		$(FW_FILE_1_ADDR) $(FW_FILE_1) \
+		$(FW_FILE_2_ADDR) $(FW_FILE_2) \
+		$(FW_DATA_DEFAULT_ADDR) $(FW_DATA_DEFAULT) \
+		$(FW_DATA_1_ADDR) $(FW_DATA_BLANK) 
+		
 	
 
 clean:

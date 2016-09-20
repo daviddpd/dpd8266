@@ -9,6 +9,7 @@
 #include "__attribute__.h"
 #include "util.h"
 
+int _GLOBAL_DEBUG;
 
 static void helloWorld();
 
@@ -30,8 +31,19 @@ user_init()
 {
 
     uart_init(BIT_RATE_115200,BIT_RATE_115200);
+	#ifdef VERSION_DATE
+	#ifdef VERSION_GIT
+	os_printf("0000000000 0000000000 0000000000 0000000000  %040x\n", 0);
+	os_printf("%040x\n", 0);	
+	os_printf("comnplie date: %s git:%s SDK Version: %s\n" , VERSION_DATE, VERSION_GIT, system_get_sdk_version() );
+	CHATFABRIC_PRINT("\n");
+	#endif
+	#endif
+
+
+	espWiFiInit();
 
     os_timer_disarm(&poketimer);
     os_timer_setfn(&poketimer, (os_timer_func_t *)helloWorld, NULL);
-    os_timer_arm(&poketimer, 250, 1);
+    os_timer_arm(&poketimer, 1000, 1);
 }

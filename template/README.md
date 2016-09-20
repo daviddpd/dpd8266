@@ -1,4 +1,4 @@
-# Sample/Basic Stepper motor 
+# Tempplate code
 
 ## Note ##
 
