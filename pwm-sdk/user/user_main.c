@@ -61,7 +61,28 @@ helloWorld()
 }
 
 
-void pwm_setup() 
+static void CP_ICACHE_FLASH_ATTR
+servo(uint32 units)
+{
+
+	uint32 duty = 0;
+	uint32 period = 0;
+	uint32 period_max =0;;
+	uint32 perunit =0;
+	
+	period = pwm_get_period();
+	period_max = ((period * 1000) / 45);
+		
+	perunit = period_max/200; // 200 ~ 20.0 ms PWM period, so that 1 is 0.1 ms duty cycle.
+	
+	duty =  units * perunit;
+	CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "=== Servo: Duty: %d  Period: %d Period Max: %d %d %d %d", duty, period, period_max, (i % 100), perunit, direction);	
+	pwm_set_duty( duty, 0 ); 
+	pwm_start();
+
+}
+
+void CP_ICACHE_FLASH_ATTR pwm_setup() 
 {
 	int i=0, x=0;
 	uint32 channel = 0;
@@ -75,12 +96,54 @@ void pwm_setup()
 	};
 	
     set_pwm_debug_en(0);//disable debug print in pwm driver
-    pwm_init(1000,  pwm_duty_init ,1, io_info);
+    pwm_init(20000,  pwm_duty_init ,1, io_info);
 	pwm_start();
 
 
 }
 
+void CP_ICACHE_FLASH_ATTR testSevro() 
+{
+
+	switch (i) {
+		case 0:
+				CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Starting (%d)... ", i);
+				i++;
+		break;
+		case 1:
+				CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Full Rotation units=200 (%d)... ", i);
+				servo(5);				
+				i++;			
+		break;
+		case 2:
+				CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Stop Rotation units=0 (%d)... ", i);
+				servo(15);				
+				i++;
+		break;
+		case 3:
+				CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Half Rotation units=200 (%d)... ", i);
+				servo(4);				
+				i++;			
+		break;
+		case 4:
+				CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Stop Rotation units=0 (%d)... ", i);
+				servo(15);				
+				i=0;
+		break;
+		default:
+			i=0;
+		break;
+	}
+
+}
+void CP_ICACHE_FLASH_ATTR testSevro2() 
+{
+	
+	CHATFABRIC_DEBUG_FMT( _GLOBAL_DEBUG, "Rotation units (%d)... ", i);
+	servo(i);				
+	i++;
+	if ( i >25 ) { i=3; }
+}
 
 //Init function 
 void CP_ICACHE_FLASH_ATTR
@@ -100,8 +163,10 @@ user_init()
 
 	espWiFiInit();
 	pwm_setup();
+	i=3;
+	servo(i);
 	
     os_timer_disarm(&poketimer);
-    os_timer_setfn(&poketimer, (os_timer_func_t *)helloWorld, NULL);
-    os_timer_arm(&poketimer, 100, 1);
+    os_timer_setfn(&poketimer, (os_timer_func_t *)testSevro, NULL);
+    os_timer_arm(&poketimer, 2000, 1);
 }
